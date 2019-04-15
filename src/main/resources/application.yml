@@ -1,0 +1,29 @@
+spring:
+  application: 
+    name: swblog
+  datasource: 
+    url: ${SWBLOG_DB_URL:jdbc:mysql://localhost:3306/swblog?characterEncoding=utf8&serverTimezone=GMT%2B8}
+    username: ${SWBLOG_DB_USERNAME:root}
+    password: ${SWBLOG_DB_PWD:12345678}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  flyway:
+    clean-disabled: true
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+  freemarker:
+    suffix: .ftl
+    content-type: text/html
+    charset: UTF-8
+    cache: false
+    template-loader-path:
+      - classpath:/templates
+  mvc:
+    static-path-pattern: /static/**
+    
+server:
+  port: ${SWBLOG_PORT:80}
+
+mybatis-plus: 
+  mapper-locations: classpath:com/swnote/*/dao/*.xml
+  type-aliases-package: com.swnote.auth.domain,com.swnote.blog.domain,com.swnote.common.domain
