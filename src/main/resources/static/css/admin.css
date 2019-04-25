@@ -1,0 +1,13 @@
+.navbar-default .navbar-brand{color:#428bca;}
+.navbar-default a.navbar-brand:hover{color:#428bca;}
+.navbar-default .navbar-nav>li>a{color:#428bca;}
+.navbar-default .navbar-nav>li>a:hover{color:#428bca;}
+a.logo{font-family:华文行楷,helvetica, Arial, "Hiragino Sans GB", "Microsoft YaHei", simsun;font-size:35px;}
+.footer {height: 100px;background-color: #2f2f2f;color: #777;padding-top: 30px;margin-top:20px;}
+.nav-stacked {border: 1px solid #ddd;border-radius: 5px;min-height: 460px;}
+.total-title {width:85%;height:90px;border-radius:4px;color:#fff;}
+.total-title .num {font-size: 36px;margin-left: 10px;}
+.total-title .tit {margin-left: 10px;margin-top: 3px;}
+.bg-red {background-color:#f35454;}
+.bg-blue {background-color: #4aa3de;}
+.bg-green {background-color: #4ac77c;}
