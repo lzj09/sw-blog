@@ -88,8 +88,6 @@ public class UserController {
 
             // 获取用户ip
             String ip = HttpUtil.getIpAddr(request);
-            // 获取当前时间
-            Date now = new Date();
 
             // 构建用户信息
             User user = new User();
@@ -97,23 +95,9 @@ public class UserController {
             user.setEmail(email);
             user.setPassword(StringUtil.md5(password));
             user.setCreateIp(ip);
-            // 设置主键
-            user.setUserId(IdGenarator.guid());
-            // 设置未实名认证
-            user.setRealStatus(User.REAL_STATUS_NO);
-            // 设置是否激活 - TODO: 目前为默认激活，以后需要根据系统设置来判断
-            user.setIsActive(User.ACTIVE_YES);
-            // 设置启用账号状态
-            user.setStatus(User.STATUS_YES);
-            // 设置创建时间
-            user.setCreateTime(now);
-            // 设置关注数为0
-            user.setFollows(0);
-            // 设置粉丝数为0
-            user.setFans(0);
             
             // 保存用户信息
-            boolean flag = userService.save(user);
+            boolean flag = userService.create(user);
             if (!flag) {
                 throw new TipException("用户创建失败");
             }
@@ -146,5 +130,50 @@ public class UserController {
             return "redirect:/u/" + code;
         }
         return Const.BASE_INDEX_PAGE + "auth/user/login";
+    }
+
+    /**
+     * 处理登录信息
+     *
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/auth/login", method = RequestMethod.POST)
+    @ResponseBody
+    public Result login(HttpServletRequest request, HttpSession session) {
+        Result result = new Result();
+        try {
+            // 接收参数
+            String name = request.getParameter("name");
+            String password = request.getParameter("password");
+
+            if (StringUtils.isEmpty(name) || StringUtils.isEmpty(password)) {
+                throw new TipException("缺少必要请求参数");
+            }
+
+            // 获取用户ip
+            String ip = HttpUtil.getIpAddr(request);
+
+            User user = userService.verifyUser(name, password, ip);
+            if (user == null) {
+                throw new TipException("用户名或密码错误");
+            }
+
+            // 放置session信息
+            session.setAttribute(Const.SESSION_USER, user);
+
+            // TODO 还有一些相关统计信息，后面再加上
+
+            result.setCode(Result.CODE_SUCCESS);
+            result.setMsg("登录成功");
+        } catch (TipException e) {
+            result.setCode(Result.CODE_EXCEPTION);
+            result.setMsg(e.getMessage());
+        } catch (Exception e) {
+            log.error("登录失败", e);
+            result.setCode(Result.CODE_EXCEPTION);
+            result.setMsg("登录失败");
+        }
+        return result;
     }
 }

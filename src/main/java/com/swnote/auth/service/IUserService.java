@@ -27,4 +27,22 @@ public interface IUserService extends IService<User> {
      * @return
      */
     public User getByEmail(String email);
+
+    /**
+     * 创建用户信息
+     *
+     * @param user
+     * @return
+     */
+    public boolean create(User user);
+
+    /**
+     * 校验用户登录信息
+     *
+     * @param name
+     * @param password
+     * @param ip
+     * @return
+     */
+    public User verifyUser(String name, String password, String ip);
 }

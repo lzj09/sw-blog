@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
     <head>
-        <title>用户注册 - 守望笔记</title>
+        <title>用户注册 - 守望博客</title>
         <#include "/index/common/meta.ftl">
     </head>
     <body class="gray-bg">
