@@ -243,6 +243,15 @@ public class StringUtil {
     }
 
     /**
+     *  校验是否由字母、数字和下划线组成
+     *
+     * @param str
+     * @return
+     */
+    public static boolean isId(String str) {
+        return regexMatcher("^\\w+$", str);
+    }
+    /**
      * 将对象转成JSON字符串
      * 
      * @param obj
@@ -283,4 +292,5 @@ public class StringUtil {
         content = content.replaceAll("&gt;", "");
         return content;
     }
+
 }

@@ -35,8 +35,8 @@
         </div>
 
         <#include "/index/common/footer.ftl">
-        
-        <script>
+
+        <script type="text/javascript">
             function login() {
                 var name = $.trim($("#name").val());
                 var pwd = $.trim($("#pwd").val());
@@ -53,7 +53,11 @@
 
                 $.post("${rc.contextPath}/auth/login", {name:name, password:pwd}, function(data) {
                     if (data.code == 20) {
-                        SWUtils.skip('${rc.contextPath}/')
+                        if (data.content == "" || data.content == null) {
+                            SWUtils.skip('${rc.contextPath}/user/code')
+                        } else {
+                            SWUtils.skip('${rc.contextPath}/u/' + data.content)
+                        }
                     } else {
                         SWDialog.errorTips(data.msg);
                     }

@@ -1,4 +1,4 @@
-body{word-wrap:break-word;font-family: helvetica, Arial, "Hiragino Sans GB", "Microsoft YaHei", simsun;background-color: #2f4050;font-size: 13px;color: #676a6c;overflow-x: hidden;padding-top:70px;}
+body{word-wrap:break-word;font-family:helvetica, Arial, "Hiragino Sans GB", "Microsoft YaHei", simsun;background-color: #2f4050;font-size: 13px;color: #676a6c;overflow-x: hidden;padding-top:70px;}
 h1,h2,h3,h4,h5,h6 {font-weight: 100;}
 h1 {font-size: 30px;}
 h2 {font-size: 24px;}
@@ -181,3 +181,5 @@ article .note-cont .doc-download a {font-size: 16px;}
 .p-cont {font-size: 15px;color: #333;line-height: 25px;}
 
 .footer {height: 100px;background-color: #2f2f2f;color: #777;padding-top: 30px;}
+
+.animated {min-height: 460px;}

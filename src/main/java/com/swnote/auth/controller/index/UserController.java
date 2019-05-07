@@ -166,6 +166,7 @@ public class UserController {
 
             result.setCode(Result.CODE_SUCCESS);
             result.setMsg("登录成功");
+            result.setContent(user.getCode());
         } catch (TipException e) {
             result.setCode(Result.CODE_EXCEPTION);
             result.setMsg(e.getMessage());
@@ -173,6 +174,73 @@ public class UserController {
             log.error("登录失败", e);
             result.setCode(Result.CODE_EXCEPTION);
             result.setMsg("登录失败");
+        }
+        return result;
+    }
+
+    /**
+     * 加载出修改个人主页标识页面
+     *
+     * @return
+     */
+    @RequestMapping(value = "/user/code", method = RequestMethod.GET)
+    public String code(HttpSession session) {
+        // session中的信息
+        User user = (User) session.getAttribute(Const.SESSION_USER);
+        if (!StringUtils.isEmpty(user.getCode())) {
+            // 跳转到个人主页
+            return "redirect:/u/" + user.getCode();
+        }
+        return Const.BASE_INDEX_PAGE + "auth/user/code";
+    }
+
+    /**
+     * 保存主页标识信息
+     *
+     * @param request
+     * @param session
+     * @return
+     */
+    @RequestMapping(value = "/user/code", method = RequestMethod.POST)
+    @ResponseBody
+    public Result code(HttpServletRequest request, HttpSession session) {
+        Result result = new Result();
+        try {
+            // 接收参数
+            String code = request.getParameter("code");
+
+            // 校验参数
+            if (StringUtils.isEmpty(code)) {
+                throw new TipException("主页标识不能为空");
+            }
+            if (!StringUtil.isId(code)) {
+                throw new TipException("主页标识只能包含字母、数字和下划线");
+            }
+
+            // session中的信息
+            User user = (User) session.getAttribute(Const.SESSION_USER);
+            if (!StringUtils.isEmpty(user.getCode())) {
+                throw new TipException("主页标识只能设置一次");
+            }
+
+            // 设置主页标识
+            user.setCode(code);
+            userService.updateById(user);
+
+            // 更新session
+            session.removeAttribute(Const.SESSION_USER);
+            session.setAttribute(Const.SESSION_USER, user);
+
+            result.setCode(Result.CODE_SUCCESS);
+            result.setMsg("修改成功");
+            result.setContent(code);
+        } catch (TipException e) {
+            result.setCode(Result.CODE_EXCEPTION);
+            result.setMsg(e.getMessage());
+        } catch (Exception e) {
+            log.error("保存主页标识信息失败", e);
+            result.setCode(Result.CODE_EXCEPTION);
+            result.setMsg("保存主页标识信息失败");
         }
         return result;
     }

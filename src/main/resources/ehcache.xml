@@ -4,25 +4,8 @@
     updateCheck="false"
     monitoring="autodetect" 
     dynamicConfig="true">
-<!-- 1)最好在ehcache.xml中声明不进行updateCheck -->  
-<!-- 2)为了配合BigMemory和Size Limit,原来的属性最好改名 -->  
-<!--   maxElementsInMemory->maxEntriesLocalHeap -->  
-<!--   maxElementsOnDisk->maxEntriesLocalDisk -->  
-<diskStore path="java.io.tmpdir" />
 
-<!--   <defaultCache>元素：设定缓存的默认数据过期策略。  
-<defaultCache 
-	maxEntriesLocalHeap="10000"
-	maxEntriesLocalDisk="10000000"
-	eternal="false"
-	timeToIdleSeconds="0" 
-	timeToLiveSeconds="60" 
-	overflowToDisk="false"
-	diskPersistent="false"
-	diskExpiryThreadIntervalSeconds="120"
-	diskSpoolBufferSizeMB="30"
-	memoryStoreEvictionPolicy="LRU">
-</defaultCache> --> 
+<diskStore path="java.io.tmpdir" />
 
 <!-- 系统临时缓存（十分钟） --> 
 <cache 
