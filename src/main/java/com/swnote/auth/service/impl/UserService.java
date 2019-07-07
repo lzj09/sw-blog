@@ -40,6 +40,11 @@ public class UserService extends ServiceImpl<UserDao, User> implements IUserServ
     }
 
     @Override
+    public User getByCode(String code) {
+        return getOne(new QueryWrapper<User>().lambda().eq(User::getCode, code));
+    }
+
+    @Override
     public boolean create(User user) {
         // 获取当前时间
         Date now = new Date();

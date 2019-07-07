@@ -29,6 +29,14 @@ public interface IUserService extends IService<User> {
     public User getByEmail(String email);
 
     /**
+     * 根据code获取用户信息
+     *
+     * @param code
+     * @return
+     */
+    public User getByCode(String code);
+
+    /**
      * 创建用户信息
      *
      * @param user

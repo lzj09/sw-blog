@@ -179,6 +179,37 @@ public class UserController {
     }
 
     /**
+     *  退出系统
+     *
+     * @param session
+     * @return
+     */
+    @RequestMapping(value = "/auth/logout", method = RequestMethod.POST)
+    @ResponseBody
+    public Result logout(HttpSession session) {
+        Result result = new Result();
+        try {
+            User user = (User) session.getAttribute(Const.SESSION_USER);
+            if (user == null || StringUtils.isEmpty(user.getUserId())) {
+                throw new TipException("用户还没有登录");
+            }
+
+            session.removeAttribute(Const.SESSION_USER);
+
+            result.setCode(Result.CODE_SUCCESS);
+            result.setMsg("退出成功");
+        } catch (TipException e) {
+            result.setCode(Result.CODE_EXCEPTION);
+            result.setMsg(e.getMessage());
+        } catch (Exception e) {
+            log.error("退出失败", e);
+            result.setCode(Result.CODE_EXCEPTION);
+            result.setMsg("退出失败");
+        }
+        return result;
+    }
+
+    /**
      * 加载出修改个人主页标识页面
      *
      * @return
@@ -241,6 +272,88 @@ public class UserController {
             log.error("保存主页标识信息失败", e);
             result.setCode(Result.CODE_EXCEPTION);
             result.setMsg("保存主页标识信息失败");
+        }
+        return result;
+    }
+
+    /**
+     * 加载出修改个人信息页面
+     *
+     * @param session
+     * @return
+     */
+    @RequestMapping(value = "/user/edit", method = RequestMethod.GET)
+    public String edit(HttpSession session, Model model) {
+        // session中的信息
+        User sessionUser = (User) session.getAttribute(Const.SESSION_USER);
+
+        // 从数据库中获取用户信息
+        User user = userService.getById(sessionUser.getUserId());
+
+        model.addAttribute("user", user);
+        return Const.BASE_INDEX_PAGE + "auth/user/edit";
+    }
+
+    /**
+     * 修改个人信息
+     *
+     * @param request
+     * @param session
+     * @return
+     */
+    @RequestMapping(value = "/user/edit", method = RequestMethod.POST)
+    @ResponseBody
+    public Result edit(HttpServletRequest request, HttpSession session) {
+        Result result = new Result();
+        try {
+            // 获取登录信息
+            User tempUser = (User) session.getAttribute(Const.SESSION_USER);
+            String userId = tempUser.getUserId();
+
+            // 接收参数
+            String realName = request.getParameter("realName");
+            String cellphone = request.getParameter("cellphone");
+            String sexStr = request.getParameter("sex");
+            String introduce = request.getParameter("introduce");
+
+            if (StringUtils.isEmpty(realName) || StringUtils.isEmpty(cellphone) || StringUtils.isEmpty(sexStr) || StringUtils.isEmpty(introduce)) {
+                throw new TipException("缺少必要请求参数");
+            }
+
+            // 校验性别
+            int sex = User.SEX_SECRET;
+            try {
+                sex = Integer.parseInt(sexStr);
+
+                if (User.SEX_FEMALE != sex && User.SEX_MALE != sex && User.SEX_SECRET != sex) {
+                    throw new Exception();
+                }
+            } catch (Exception e) {
+                throw new TipException("性别数据不符合规则");
+            }
+
+            // 获取用户的信息
+            User user = userService.getById(userId);
+            user.setRealName(realName);
+            user.setCellphone(cellphone);
+            user.setSex(sex);
+            user.setIntroduce(introduce);
+
+            // 更新用户的信息
+            boolean flag = userService.updateById(user);
+            if (!flag) {
+                throw new TipException("修改个人信息失败");
+            }
+
+            result.setCode(Result.CODE_SUCCESS);
+            result.setMsg("修改成功");
+        } catch (TipException e) {
+            result.setCode(Result.CODE_EXCEPTION);
+            result.setMsg(e.getMessage());
+        } catch (Exception e) {
+            log.error("修改个人信息失败", e);
+            result.setCode(Result.CODE_EXCEPTION);
+            result.setMsg("修改个人信息失败");
         }
         return result;
     }
