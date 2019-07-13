@@ -357,4 +357,97 @@ public class UserController {
         }
         return result;
     }
+
+    /**
+     * 加载出修改头像页面
+     *
+     * @return
+     */
+    @RequestMapping(value = "/user/avatar", method = RequestMethod.GET)
+    public String avatar(HttpSession session, Model model) {
+        // session中的信息
+        User sessionUser = (User) session.getAttribute(Const.SESSION_USER);
+
+        // 从数据库中获取用户信息
+        User user = userService.getById(sessionUser.getUserId());
+
+        model.addAttribute("user", user);
+        return Const.BASE_INDEX_PAGE + "auth/user/avatar";
+    }
+
+    /**
+     * 加载出修改密码页面
+     *
+     * @param session
+     * @param model
+     * @return
+     */
+    @RequestMapping(value = "/user/password", method = RequestMethod.GET)
+    public String password(HttpSession session, Model model) {
+        // session中的信息
+        User sessionUser = (User) session.getAttribute(Const.SESSION_USER);
+
+        // 从数据库中获取用户信息
+        User user = userService.getById(sessionUser.getUserId());
+
+        model.addAttribute("user", user);
+        return Const.BASE_INDEX_PAGE + "auth/user/password";
+    }
+
+    /**
+     * 修改密码
+     *
+     * @param request
+     * @param session
+     * @param model
+     * @return
+     */
+    @RequestMapping(value = "/user/password", method = RequestMethod.POST)
+    @ResponseBody
+    public Result password(HttpServletRequest request, HttpSession session) {
+        Result result = new Result();
+        try {
+            // 获取登录信息
+            User tempUser = (User) session.getAttribute(Const.SESSION_USER);
+            String userId = tempUser.getUserId();
+
+            // 接收参数
+            String password = request.getParameter("password");
+            String newPwd = request.getParameter("newPwd");
+            String confirmNewPwd = request.getParameter("confirmNewPwd");
+
+            if (StringUtils.isEmpty(password) || StringUtils.isEmpty(newPwd) || StringUtils.isEmpty(confirmNewPwd)) {
+                throw new TipException("缺少必要请求参数");
+            }
+
+            if (!newPwd.equals(confirmNewPwd)) {
+                throw new TipException("两次输入的新密码不相等");
+            }
+
+            // 获取用户信息
+            User user = userService.getById(userId);
+            if (!user.getPassword().equals(StringUtil.md5(password))) {
+                throw new TipException("旧密码输入不正确");
+            }
+
+            // 修改密码
+            user.setPassword(StringUtil.md5(newPwd));
+            boolean flag = userService.updateById(user);
+
+            if (!flag) {
+                throw new TipException("修改密码失败");
+            }
+
+            result.setCode(Result.CODE_SUCCESS);
+            result.setMsg("修改成功");
+        } catch (TipException e) {
+            result.setCode(Result.CODE_EXCEPTION);
+            result.setMsg(e.getMessage());
+        } catch (Exception e) {
+            log.error("修改密码失败", e);
+            result.setCode(Result.CODE_EXCEPTION);
+            result.setMsg("修改密码失败");
+        }
+        return result;
+    }
 }

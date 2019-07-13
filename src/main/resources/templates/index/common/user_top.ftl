@@ -4,7 +4,7 @@
             <div class="left">
                 <div class="avatar">
                     <#if (user.picture)?exists>
-                        <img src="${avatarDomain}${user.picture}" class="img-circle" width="80px" height="80px"/>
+                        <img src="${rc.contextPath}/img/avatar/${user.picture}" class="img-circle" width="80px" height="80px"/>
                     <#else>
                         <img src="${rc.contextPath}/static/img/default-avatar.png" class="img-circle" width="80px" height="80px"/>
                     </#if>

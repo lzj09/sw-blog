@@ -40,4 +40,9 @@ public class Config implements Serializable {
      */
     @TableField("description")
     private String description;
+
+    /**
+     * 头像图片的保存根路径的key
+     */
+    public static final String CONFIG_IMG_AVATAR_PATH = "img_avatar_path";
 }
