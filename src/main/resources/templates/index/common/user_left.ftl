@@ -18,26 +18,26 @@
                     <div class="media-body">笔记</div>
                 </div>
             </a>
-            <a href="${rc.contextPath}/u/${user.userId}/group">
+            <a href="${rc.contextPath}/u/${user.code}/group">
                 <div class="feed-element">
-                    <div class="media-body">笔记集</div>
+                    <div class="media-body">专栏</div>
                 </div>
             </a>
             <a href="${rc.contextPath}/u/${user.userId}/group/follow">
                 <div class="feed-element">
                     <#if (Session["_SESSION_USER"]?exists && user.userId == _SESSION_USER.userId)>
-                        <div class="media-body">我关注的笔记集</div>
+                        <div class="media-body">我关注的专栏</div>
                     <#else>
-                        <div class="media-body">他关注的笔记集</div>
+                        <div class="media-body">他关注的专栏</div>
                     </#if>
                 </div>
             </a>
             <a href="${rc.contextPath}/u/${user.userId}/note/like">
                 <div class="feed-element">
                     <#if (Session["_SESSION_USER"]?exists && user.userId == _SESSION_USER.userId)>
-                        <div class="media-body">我收藏的笔记</div>
+                        <div class="media-body">我收藏的文章</div>
                     <#else>
-                        <div class="media-body">他收藏的笔记</div>
+                        <div class="media-body">他收藏的文章</div>
                     </#if>
                 </div>
             </a>

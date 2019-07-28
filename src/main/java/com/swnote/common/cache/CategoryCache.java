@@ -1,7 +1,7 @@
 package com.swnote.common.cache;
 
-import com.swnote.common.domain.Config;
-import com.swnote.common.service.IConfigService;
+import com.swnote.blog.domain.Category;
+import com.swnote.blog.service.ICategoryService;
 import com.swnote.common.util.Const;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,17 +14,17 @@ import javax.annotation.PostConstruct;
 import java.util.List;
 
 /**
- * 缓存配置信息
- * 配置信息放到系统永久缓存中，存放形式为："_CONFIG" + configId为key，value为配置信息对象
+ * 缓存分类信息
+ * 分类信息放到系统永久缓存中，存放形式为："_CATEGORY" + categoryId为key，value为分类信息对象
  *
  * @author lzj
  * @since 1.0
- * @date [2019-04-27]
+ * @date [2019-07-22]
  */
 @Slf4j
-@DependsOn("configService")
-@Component("configCache")
-public class ConfigCache implements ICache<Config> {
+@DependsOn("categoryService")
+@Component("categoryCache")
+public class CategoryCache implements ICache<List<Category>> {
 
     /**
      * 注入基于Spring提供的Cache接口实例，默认由Ehcache实现
@@ -34,7 +34,7 @@ public class ConfigCache implements ICache<Config> {
     private CacheManager cacheManager;
 
     @Autowired
-    private IConfigService configService;
+    private ICategoryService categoryService;
 
     /**
      * 缓存实例
@@ -44,7 +44,12 @@ public class ConfigCache implements ICache<Config> {
     /**
      * key的前缀
      */
-    private String keyPrefix = "_CONFIG";
+    private String keyPrefix = "_CATEGORY";
+
+    /**
+     * 分类信息根节点ID
+     */
+    public static final String ROOT_CATEGORY_ID = "0";
 
     @PostConstruct
     public void init() {
@@ -52,34 +57,34 @@ public class ConfigCache implements ICache<Config> {
         cache = cacheManager.getCache(Const.CACHE_SYSTEM_ETERNAL);
         log.info("获取系统永久缓存实例");
 
-        log.info("开始加载所有配置信息");
-        List<Config> configs = configService.list();
-        if (configs != null && !configs.isEmpty()) {
-            configs.stream().forEach(config -> cache.put(keyPrefix + config.getConfigId(), config));
+        log.debug("开始加载父分类信息");
+        List<Category> categorys = categoryService.getByParentId(ROOT_CATEGORY_ID);
+        if (categorys != null && !categorys.isEmpty()) {
+            put(keyPrefix + ROOT_CATEGORY_ID, categorys);
         }
-        log.info("加载完毕所有配置信息");
+        log.debug("加载完毕父分类信息");
     }
 
     @Override
-    public Config get(Object key) {
+    public List<Category> get(Object key) {
         Cache.ValueWrapper valueWrapper = cache.get(keyPrefix + key);
         if (valueWrapper == null) {
-            // 此时从数据库重新加载一次
-            Config config = configService.getById((String) key);
-            if (config == null) {
+            // 从数据库重新加载一次
+            List<Category> categorys = categoryService.getByParentId((String) key);
+            if (categorys == null) {
                 return null;
             }
 
             // 再次放到缓存中
-            put(config.getConfigId(), config);
+            put(key, categorys);
 
-            return config;
+            return categorys;
         }
-        return (Config) valueWrapper.get();
+        return (List<Category>) valueWrapper.get();
     }
 
     @Override
-    public void put(Object key, Config value) {
+    public void put(Object key, List<Category> value) {
         cache.put(keyPrefix + key, value);
     }
 

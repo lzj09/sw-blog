@@ -55,7 +55,7 @@ public class UserService extends ServiceImpl<UserDao, User> implements IUserServ
         user.setRealStatus(User.REAL_STATUS_NO);
 
         // 用户是否需要激活
-        Config config = configCache.get(Const.CONFIG_USER_ACTIVE);
+        Config config = configCache.get(Config.CONFIG_USER_ACTIVE);
         if (config != null && "1".equals(config.getConfigValue())) {
             // TODO 发送激活邮件信息
             // 说明需要激活

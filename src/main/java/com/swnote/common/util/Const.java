@@ -30,11 +30,6 @@ public class Const {
     public final static String CACHE_SYSTEM_ETERNAL = "SystemEternalCache";
 
     /**
-     * 系统配置项 - 用户注册成功后是否需要激活
-     */
-    public final static String CONFIG_USER_ACTIVE = "user_active";
-
-    /**
      * 私有化构造函数
      */
     private Const() {

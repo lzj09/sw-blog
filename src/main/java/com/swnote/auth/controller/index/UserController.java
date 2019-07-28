@@ -1,10 +1,13 @@
 package com.swnote.auth.controller.index;
 
-import java.util.Date;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
+import com.swnote.auth.domain.User;
+import com.swnote.auth.service.IUserService;
+import com.swnote.common.bean.Result;
+import com.swnote.common.exception.TipException;
+import com.swnote.common.util.Const;
+import com.swnote.common.util.HttpUtil;
+import com.swnote.common.util.StringUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,16 +16,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.swnote.auth.domain.User;
-import com.swnote.auth.service.IUserService;
-import com.swnote.common.bean.Result;
-import com.swnote.common.exception.TipException;
-import com.swnote.common.util.Const;
-import com.swnote.common.util.HttpUtil;
-import com.swnote.common.util.IdGenarator;
-import com.swnote.common.util.StringUtil;
-
-import lombok.extern.slf4j.Slf4j;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 /**
  * 用户相关信息的前端控制器类
@@ -399,7 +394,6 @@ public class UserController {
      *
      * @param request
      * @param session
-     * @param model
      * @return
      */
     @RequestMapping(value = "/user/password", method = RequestMethod.POST)

@@ -1,7 +1,5 @@
 package com.swnote.common.handler.impl;
 
-import com.swnote.auth.domain.User;
-import com.swnote.auth.service.IUserService;
 import com.swnote.common.cache.ICache;
 import com.swnote.common.domain.Config;
 import com.swnote.common.exception.TipException;
@@ -10,7 +8,6 @@ import com.swnote.common.util.DateUtil;
 import com.swnote.common.util.FileUtil;
 import com.swnote.common.util.IdGenarator;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,18 +20,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 上传头像处理类
+ * 上传专栏Logo处理类
  *
  * @author lzj
  * @since 1.0
- * @date [2019-07-09]
+ * @date [2019-07-23]
  */
 @Slf4j
-@Component("_avatar")
-public class UploadAvatarHandler implements IUploadHandler {
-
-    @Autowired
-    private IUserService userService;
+@Component("_groupLogo")
+public class UploadGroupLogoHandler implements IUploadHandler {
 
     @Resource(name = "configCache")
     private ICache<Config> configCache;
@@ -43,6 +37,14 @@ public class UploadAvatarHandler implements IUploadHandler {
     public Object upload(MultipartFile file, String distType, String userId) throws Exception {
         Map<String, Object> result = new HashMap<String, Object>();
         try {
+            // 获取图片的原始名称
+            String originalName = file.getOriginalFilename();
+
+            // 判断图片的类型
+            if (!(originalName.endsWith(".jpg") || originalName.endsWith(".JPG") || originalName.endsWith(".png") || originalName.endsWith(".PNG") || originalName.endsWith(".gif") || originalName.endsWith(".GIF") || originalName.endsWith(".jpeg") || originalName.endsWith(".JPEG"))) {
+                throw new TipException("您上传的图片类型有误，请上传格式为jpg、png或gif");
+            }
+
             // 获取图片的大小
             long fileSize = file.getSize();
 
@@ -51,7 +53,7 @@ public class UploadAvatarHandler implements IUploadHandler {
                 throw new TipException("您上传的图片超过2M");
             }
 
-            Config config = configCache.get(Config.CONFIG_IMG_AVATAR_PATH);
+            Config config = configCache.get(Config.CONFIG_IMG_GROUP_LOGO_PATH);
             // 保存头像的根目录
             String basePath = config.getConfigValue();
             if (!(basePath.endsWith("/") || basePath.endsWith("\\"))) {
@@ -67,27 +69,19 @@ public class UploadAvatarHandler implements IUploadHandler {
                 imageDir.mkdirs();
             }
 
-            String fileNewName = IdGenarator.guid() + ".jpg";
+            String fileNewName = IdGenarator.guid() + originalName.substring(originalName.lastIndexOf("."));
             FileUtil.copy(file.getInputStream(), new FileOutputStream(new File(imageDir, fileNewName)));
 
-            // 获取用户信息
-            User user = userService.getById(userId);
-            user.setPicture(dateDirName + "/" + fileNewName);
-
-            // 更新信息
-            userService.updateById(user);
-
-            result.put("success", true);
-            result.put("msg", "上传头像成功");
+            result.put("url", dateDirName + "/" + fileNewName);
+            result.put("msg", "上传成功");
         } catch (TipException e) {
-            result.put("success", false);
+            result.put("url", "");
             result.put("msg", e.getMessage());
         } catch (Exception e) {
-            log.error("上传头像失败", e);
-            result.put("success", false);
-            result.put("msg", "上传头像失败");
+            log.error("上传失败", e);
+            result.put("url", "");
+            result.put("msg", "上传失败");
         }
-
         return result;
     }
 

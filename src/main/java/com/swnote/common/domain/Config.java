@@ -42,7 +42,22 @@ public class Config implements Serializable {
     private String description;
 
     /**
-     * 头像图片的保存根路径的key
+     * 系统配置项 - 用户注册成功后是否需要激活key
+     */
+    public final static String CONFIG_USER_ACTIVE = "user_active";
+
+    /**
+     * 系统配置项 - 专栏是否需要审核
+     */
+    public final static String CONFIG_GROUP_AUDIT = "group_audit";
+
+    /**
+     * 系统配置项 - 头像图片的保存基路径的key
      */
     public static final String CONFIG_IMG_AVATAR_PATH = "img_avatar_path";
+
+    /**
+     * 系统配置项 - 专栏Logo保存基路径的key
+     */
+    public static final String CONFIG_IMG_GROUP_LOGO_PATH = "img_group_logo_path";
 }

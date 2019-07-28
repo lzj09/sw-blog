@@ -46,9 +46,16 @@ public class MvcConfig implements WebMvcConfigurer {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         // 映射头像图片
         String avatarPath = configCache.get(Config.CONFIG_IMG_AVATAR_PATH).getConfigValue();
-        if (!avatarPath.endsWith("/")) {
+        if (!(avatarPath.endsWith("/") || avatarPath.endsWith("\\"))) {
             avatarPath += "/";
         }
         registry.addResourceHandler("/img/avatar/**").addResourceLocations("file:" + avatarPath);
+
+        // 映射专栏logo
+        String groupLogoPath = configCache.get(Config.CONFIG_IMG_GROUP_LOGO_PATH).getConfigValue();
+        if (!(groupLogoPath.endsWith("/") || groupLogoPath.endsWith("\\"))) {
+            groupLogoPath += "/";
+        }
+        registry.addResourceHandler("/img/group/logo/**").addResourceLocations("file:" + groupLogoPath);
     }
 }
