@@ -1,13 +1,13 @@
 package com.swnote.common.util;
 
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.io.StringWriter;
 import java.security.MessageDigest;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * 字符串工具类
@@ -272,7 +272,7 @@ public class StringUtil {
      * @return
      */
     public static String replaceHtmlTags(String content) {
-        return content.replaceAll("</?[^>]+>", "");
+        return content.replaceAll("<[^>]+(>){0,1}", "");
     }
 
     /**
@@ -292,5 +292,4 @@ public class StringUtil {
         content = content.replaceAll("&gt;", "");
         return content;
     }
-
 }

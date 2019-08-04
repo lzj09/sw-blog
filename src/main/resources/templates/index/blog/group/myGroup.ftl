@@ -55,11 +55,11 @@
                                                                 <#if followGroupIds?exists && followGroupIds?seq_contains(group.groupId)>
                                                                     &nbsp;&nbsp;<a href="javascript:void(0);" class="followed">已关注</a>
                                                                 <#else>
-                                                                    &nbsp;&nbsp;<a href="javascript:followGroup('${group.ngroupId}');" target="_blank">关注</a>
+                                                                    &nbsp;&nbsp;<a href="javascript:followGroup('${group.groupId}');" target="_blank">关注</a>
                                                                 </#if>
                                                             </#if>
                                                         <#else>
-                                                            &nbsp;&nbsp;<a href="javascript:followLogin();">关注</a>
+                                                            &nbsp;&nbsp;<a href="javascript:followUserLogin('${rc.contextPath}');">关注</a>
                                                         </#if>
                                                     </p>
                                                 </div>

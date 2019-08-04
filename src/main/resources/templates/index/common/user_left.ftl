@@ -13,9 +13,9 @@
                     </div>
                 </a>
             </#if>
-            <a href="${rc.contextPath}/u/${user.userId}/note">
+            <a href="${rc.contextPath}/u/${user.code}/article">
                 <div class="feed-element">
-                    <div class="media-body">笔记</div>
+                    <div class="media-body">文章</div>
                 </div>
             </a>
             <a href="${rc.contextPath}/u/${user.code}/group">

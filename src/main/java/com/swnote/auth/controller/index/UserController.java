@@ -444,4 +444,14 @@ public class UserController {
         }
         return result;
     }
+
+    /**
+     * 加载出弹框登录页面
+     *
+     * @return
+     */
+    @RequestMapping(value = "/auth/simpleLogin", method = RequestMethod.GET)
+    public String simpleLogin() {
+        return Const.BASE_INDEX_PAGE + "auth/user/simpleLogin";
+    }
 }

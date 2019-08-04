@@ -346,4 +346,48 @@ public class GroupController {
         }
         return result;
     }
+
+    /**
+     * 关注专栏
+     *
+     * @param groupId
+     * @param session
+     * @return
+     */
+    @RequestMapping(value = "/user/group/follow/{groupId}", method = RequestMethod.GET)
+    @ResponseBody
+    public Result follow(@PathVariable("groupId") String groupId, HttpSession session) {
+        Result result = new Result();
+        try {
+            Group group = groupService.getById(groupId);
+            if (group == null || StringUtils.isEmpty(group.getGroupId())) {
+                log.error("groupId: " + groupId + ": 该专栏不存在");
+                throw new TipException("该专栏不存在");
+            }
+
+            // 获取用户信息
+            User tempUser = (User) session.getAttribute(Const.SESSION_USER);
+            String userId = tempUser.getUserId();
+            if (userId.equals(group.getCreator())) {
+                throw new TipException("不能关注自己的专栏");
+            }
+
+            // 封装关注专栏信息
+            GroupFans groupFans = new GroupFans();
+            groupFans.setGroupId(groupId);
+            groupFans.setUserId(userId);
+            groupFans.setCreateTime(new Date());
+
+            // 保存
+            groupFansService.save(groupFans);
+
+            result.setCode(Result.CODE_SUCCESS);
+            result.setMsg("关注专栏成功");
+        } catch (Exception e) {
+            log.error("关注专栏失败", e);
+            result.setCode(Result.CODE_EXCEPTION);
+            result.setMsg("关注专栏失败");
+        }
+        return result;
+    }
 }

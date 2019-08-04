@@ -1,14 +1,13 @@
 package com.swnote.common.domain;
 
-import java.io.Serializable;
-
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.io.Serializable;
 
 /**
  * 站点相关配置信息
@@ -52,6 +51,11 @@ public class Config implements Serializable {
     public final static String CONFIG_GROUP_AUDIT = "group_audit";
 
     /**
+     * 系统配置项 - 文章是否需要审核
+     */
+    public final static String CONFIG_ARTICLE_AUDIT = "article_audit";
+
+    /**
      * 系统配置项 - 头像图片的保存基路径的key
      */
     public static final String CONFIG_IMG_AVATAR_PATH = "img_avatar_path";
@@ -60,4 +64,9 @@ public class Config implements Serializable {
      * 系统配置项 - 专栏Logo保存基路径的key
      */
     public static final String CONFIG_IMG_GROUP_LOGO_PATH = "img_group_logo_path";
+
+    /**
+     * 系统配置项 - 文章图片的保存基路径的key
+     */
+    public static final String CONFIG_IMG_ARTICLE_PATH = "img_article_path";
 }

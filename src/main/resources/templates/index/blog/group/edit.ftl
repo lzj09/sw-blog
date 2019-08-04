@@ -122,7 +122,6 @@
             fileVal: "_uploadFile",
 
             formData: {
-                _distId:'_distId',
                 _distType:'_groupLogo',
             },
 

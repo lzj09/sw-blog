@@ -20,9 +20,9 @@
                 <li><a href="${rc.contextPath}/group">专栏</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
-                <li><a href="${rc.contextPath}/user/note/add" style="font-size:18px;">写文章</a></li>
+                <li><a href="${rc.contextPath}/user/article/add" style="font-size:18px;">写文章</a></li>
                 <#if Session["_SESSION_USER"]?exists>
-                    <li><a href="${rc.contextPath}/u/${_SESSION_USER.userId}"><#if (_SESSION_USER.realName)?exists> ${_SESSION_USER.realName} <#else> ${_SESSION_USER.loginName}</#if></a></li>
+                    <li><a href="${rc.contextPath}/u/${_SESSION_USER.code}"><#if (_SESSION_USER.realName)?exists> ${_SESSION_USER.realName} <#else> ${_SESSION_USER.loginName}</#if></a></li>
                     <li><a href="javascript:logout('${rc.contextPath}');">退出</a></li>
                 <#else>
                     <li><a href="${rc.contextPath}/auth/login">登录</a></li>

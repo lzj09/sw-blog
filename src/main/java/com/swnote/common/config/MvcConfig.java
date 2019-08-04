@@ -57,5 +57,13 @@ public class MvcConfig implements WebMvcConfigurer {
             groupLogoPath += "/";
         }
         registry.addResourceHandler("/img/group/logo/**").addResourceLocations("file:" + groupLogoPath);
+
+        // 映射文章图片
+        String articleImgPath = configCache.get(Config.CONFIG_IMG_ARTICLE_PATH).getConfigValue();
+        if (!(articleImgPath.endsWith("/") || articleImgPath.endsWith("\\"))) {
+            articleImgPath += "/";
+        }
+        registry.addResourceHandler("/img/article/**").addResourceLocations("file:" + articleImgPath);
+
     }
 }

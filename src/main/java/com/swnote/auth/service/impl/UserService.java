@@ -1,17 +1,15 @@
 package com.swnote.auth.service.impl;
 
-import com.swnote.common.cache.ICache;
-import com.swnote.common.domain.Config;
-import com.swnote.common.util.Const;
-import com.swnote.common.util.IdGenarator;
-import com.swnote.common.util.StringUtil;
-import org.springframework.stereotype.Service;
-
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.swnote.auth.dao.UserDao;
 import com.swnote.auth.domain.User;
 import com.swnote.auth.service.IUserService;
+import com.swnote.common.cache.ICache;
+import com.swnote.common.domain.Config;
+import com.swnote.common.util.IdGenarator;
+import com.swnote.common.util.StringUtil;
+import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.Date;

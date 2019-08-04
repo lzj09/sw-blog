@@ -23,8 +23,6 @@
                         <div class="ibox">
                             <div class="ibox-title">
                                 <h5>专栏</h5>
-                                <a class="btn btn-primary float-right" href="${rc.contextPath}/user/group/add" style="margin-top:-10px;"><i class="fa fa-book"></i> 创建专栏</a>
-                                <div class="clear"></div>
                             </div>
 
                             <div class="ibox-content">
@@ -118,7 +116,6 @@
             fileVal: "_uploadFile",
 
             formData: {
-                _distId:'_distId',
                 _distType:'_groupLogo',
             },
 
