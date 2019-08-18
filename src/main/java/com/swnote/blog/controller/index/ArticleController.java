@@ -7,8 +7,10 @@ import com.swnote.auth.domain.User;
 import com.swnote.auth.service.IUserService;
 import com.swnote.blog.domain.Article;
 import com.swnote.blog.domain.Group;
+import com.swnote.blog.domain.Tag;
 import com.swnote.blog.service.IArticleService;
 import com.swnote.blog.service.IGroupService;
+import com.swnote.blog.service.ITagService;
 import com.swnote.common.bean.Result;
 import com.swnote.common.exception.TipException;
 import com.swnote.common.util.Const;
@@ -51,6 +53,9 @@ public class ArticleController {
 
     @Autowired
     private IArticleService articleService;
+
+    @Autowired
+    private ITagService tagService;
 
     /**
      * 加载出新增文章页面
@@ -163,6 +168,139 @@ public class ArticleController {
     }
 
     /**
+     * 加载出编辑文章页面
+     *
+     * @param articleId
+     * @param model
+     * @param session
+     * @return
+     */
+    @RequestMapping(value = "/user/article/edit/{articleId}", method = RequestMethod.GET)
+    public String edit(@PathVariable("articleId") String articleId, Model model, HttpSession session) throws Exception {
+        // 根据文章ID,获取文章信息
+        Article article = articleService.getById(articleId);
+
+        // 获取登录信息
+        User tempUser = (User) session.getAttribute(Const.SESSION_USER);
+        String userId = tempUser.getUserId();
+        if (article == null || !userId.equals(article.getUserId())) {
+            log.error("userId: " + userId + ", 修改articleId: " + articleId);
+            throw new Exception("文章不存在或不能修改别人的文章");
+        }
+
+        // 获取用户信息
+        User user = userService.getById(userId);
+
+        // 构建专栏的查询条件
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("creator", user.getUserId());
+        params.put("status", Group.STATUS_SUCCESS);
+        List<Group> groups = groupService.list(new QueryWrapper<Group>().allEq(params).orderByDesc("createTime"));
+
+        // 根据文章ID获取文章的标签信息
+        List<Tag> tags = tagService.queryByArticleId(articleId);
+        String tag = "";
+        if (tags != null && !tags.isEmpty()) {
+            for (Tag item : tags) {
+                if ("".equals(tag)) {
+                    tag = item.getTag();
+                } else {
+                    tag += "," + item.getTag();
+                }
+            }
+        }
+
+        model.addAttribute("article", article);
+        model.addAttribute("user", user);
+        model.addAttribute("groups", groups);
+        model.addAttribute("tags", tag);
+        return Const.BASE_INDEX_PAGE + "blog/article/edit";
+    }
+
+    /**
+     * 编辑文章
+     *
+     * @param request
+     * @param session
+     * @return
+     */
+    @RequestMapping(value = "/user/article/edit", method = RequestMethod.POST)
+    @ResponseBody
+    public Result edit(HttpServletRequest request, HttpSession session) {
+        Result result = new Result();
+        try {
+            // 接收参数
+            String articleId = request.getParameter("articleId");
+            String groupId = request.getParameter("groupId");
+            String title = request.getParameter("title");
+            String content = request.getParameter("content");
+            String tag = request.getParameter("tag");
+            String description = request.getParameter("description");
+            String typeStr = request.getParameter("type");
+            String canTopStr = request.getParameter("canTop");
+            String canCommentStr = request.getParameter("canComment");
+
+            // 根据文章ID，获取文章信息
+            Article article = articleService.getById(articleId);
+            if (article == null || StringUtils.isEmpty(article.getArticleId())) {
+                log.error("articleId: " + articleId + "文章不存在");
+                throw new TipException("文章不存在");
+            }
+
+            // 校验参数
+            if (StringUtils.isEmpty(title) || StringUtils.isEmpty(content) || StringUtils.isEmpty(description)) {
+                throw new TipException("缺少必要参数");
+            }
+
+            int type = 0;
+            int canTop = 0;
+            int canComment = 1;
+            try {
+                type = Integer.parseInt(typeStr);
+                canTop = Integer.parseInt(canTopStr);
+                canComment = Integer.parseInt(canCommentStr);
+            } catch (Exception e) {
+                throw new TipException("参数类型错误");
+            }
+
+            // 去html相关标签
+            description = StringUtil.replaceHtmlTags(description);
+
+            // 获取session中的用户信息
+            User tempUser = (User) session.getAttribute(Const.SESSION_USER);
+            String userId = tempUser.getUserId();
+            if (!userId.equals(article.getUserId())) {
+                log.error("userId: " + userId + ", 修改articleId: " + articleId);
+                throw new Exception("不能修改别人的文章");
+            }
+
+            // 修改文章信息
+            article.setTitle(title);
+            article.setGroupId(groupId);
+            article.setContent(content);
+            article.setType(type);
+            article.setCanTop(canTop);
+            article.setCanComment(canComment);
+            article.setDescription(description);
+            article.setUpdateTime(new Date());
+
+            // 更新
+            articleService.update(article, tag);
+
+            result.setCode(Result.CODE_SUCCESS);
+            result.setMsg("编辑文章成功");
+        } catch (TipException e) {
+            result.setCode(Result.CODE_EXCEPTION);
+            result.setMsg(e.getMessage());
+        } catch (Exception e) {
+            log.error("编辑文章失败", e);
+            result.setCode(Result.CODE_EXCEPTION);
+            result.setMsg("编辑文章失败");
+        }
+        return result;
+    }
+
+    /**
      * 加载出第1页文章列表
      *
      * @param code
@@ -237,5 +375,40 @@ public class ArticleController {
         model.addAttribute("user", user);
         model.addAttribute("articles", articles);
         return Const.BASE_INDEX_PAGE + "blog/article/list";
+    }
+
+    /**
+     * 删除文章
+     *
+     * @param articleId
+     * @param session
+     * @return
+     */
+    @RequestMapping(value = "/user/article/delete/{articleId}", method = RequestMethod.GET)
+    @ResponseBody
+    public Result delete(@PathVariable("articleId") String articleId, HttpSession session) {
+        Result result = new Result();
+        try {
+            // 根据文章ID,获取文章信息
+            Article article = articleService.getById(articleId);
+
+            // 获取登录信息
+            User tempUser = (User) session.getAttribute(Const.SESSION_USER);
+
+            if (article != null && tempUser.getUserId().equals(article.getUserId())) {
+                // 删除文章
+                articleService.removeById(articleId);
+            } else {
+                throw new TipException("删除文章失败");
+            }
+
+            result.setCode(Result.CODE_SUCCESS);
+            result.setMsg("删除文章成功");
+        } catch (Exception e) {
+            log.error("删除文章失败", e);
+            result.setCode(Result.CODE_EXCEPTION);
+            result.setMsg("删除文章失败");
+        }
+        return result;
     }
 }

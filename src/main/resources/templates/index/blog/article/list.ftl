@@ -57,14 +57,36 @@
                                                 <span><i class="fa fa-clock-o"></i> ${article.createTime?string("yyyy-MM-dd HH:mm")}</span>&nbsp;&nbsp;
                                                 <span class="view-all"><i class="fa fa-file-text"></i> <a href="${rc.contextPath}/p/${article.articleId}" target="_blank" class="view-all">阅读全文</a></span>&nbsp;&nbsp;
                                                 <#if Session["_SESSION_USER"]?exists && user.userId == _SESSION_USER.userId>
-                                                    <a href="${rc.contextPath}/user/article/edit/${article.articleId}" class="operate">编辑</a>&nbsp;&nbsp;
-                                                    <a href="javascript:deleteArticle('${article.articleId}');" class="operate">删除</a>
+                                                    <a href="${rc.contextPath}/user/article/edit/${article.articleId}" class="operate"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> 编辑</a>&nbsp;&nbsp;
+                                                    <a href="javascript:deleteArticle('${article.articleId}');" class="operate"><i class="fa fa-trash-o" aria-hidden="true"></i> 删除</a>
                                                 </#if>
                                             </div>
                                         </div>
                                         <div class="clear"></div>
                                     </div>
-                                    </#list>
+                                </#list>
+
+                                <#assign articlePages = (articles.total / articles.size)?ceiling>
+                                <#if articlePages gt 1>
+                                    <div class="col-md-12" align="center">
+                                        <span class="pages-total">${articles.total}条 共${articlePages}页</span>
+                                        <ul class="pagination">
+                                            <#if articles.current == 1>
+                                                <li class="disabled"><a href="javascript:void(0);">上一页</a></li>
+                                            <#else>
+                                                <#assign pre = articles.current - 1>
+                                                <li><a href="${rc.contextPath}/u/${user.code}/article/${pre}">上一页</a></li>
+                                            </#if>
+
+                                            <#if articles.current == articlePages>
+                                                <li class="disabled"><a href="javascript:void(0);">下一页</a></li>
+                                            <#else>
+                                                <#assign next = articles.current + 1>
+                                                <li><a href="${rc.contextPath}/u/${user.code}/article/${next}">下一页</a></li>
+                                            </#if>
+                                        </ul>
+                                    </div>
+                                </#if>
                             </div>
                         </div>
                     </div>
@@ -78,6 +100,19 @@
     <#include "/index/common/footer.ftl">
 
     <script type="text/javascript">
+        // 删除笔记
+        function deleteArticle(articleId) {
+            SWDialog.confirm("您确定要删除吗，删除后将无法恢复？", function () {
+                $.get("${rc.contextPath}/user/article/delete/" + articleId, {}, function(data) {
+                    if (data.code == 20) {
+                        SWDialog.successTips(data.msg);
+                        window.setTimeout("window.location.reload()", 1000);
+                    } else {
+                        SWDialog.errorTips(data.msg);
+                    }
+                });
+            });
+        }
     </script>
 </body>
 </html>

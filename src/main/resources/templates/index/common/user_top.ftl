@@ -34,7 +34,7 @@
                             <li>
                                 <div class="meta-block">
                                     <a href="${rc.contextPath}/u/${user.userId}/note">
-                                        <p><b>${user.noteNum!}</b></p>
+                                        <p><b>0</b></p>
                                         文章 &gt;
                                     </a>
                                 </div>

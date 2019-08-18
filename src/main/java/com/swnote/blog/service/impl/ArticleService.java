@@ -58,7 +58,43 @@ public class ArticleService extends ServiceImpl<ArticleDao, Article> implements 
         // 保存文章
         boolean flag = save(article);
 
+        // 封装文章与标签的关系
+        wrapArticleTag(article.getArticleId(), tag);
+        return flag;
+    }
+
+    @Override
+    public boolean update(Article article, String tag) {
+        // 文章是否需要审核
+        Config config = configCache.get(Config.CONFIG_ARTICLE_AUDIT);
+        if (config != null && "1".equals(config.getConfigValue())) {
+            // 文章需要审核
+            article.setStatus(Article.STATUS_NO);
+        } else {
+            // 不需要审核
+            article.setStatus(Article.STATUS_SUCCESS);
+        }
+
+        // 更新文章
+        boolean flag = updateById(article);
+
+        // 删除文章与标签间的关系
+        articleTagService.remove(new QueryWrapper<ArticleTag>().lambda().eq(ArticleTag::getArticleId, article.getArticleId()));
+
+        // 删除文章与标签的关系
+        wrapArticleTag(article.getArticleId(), tag);
+        return flag;
+    }
+
+    /**
+     * 封装文章与标签的关系
+     *
+     * @param articleId
+     * @param tag
+     */
+    private void wrapArticleTag(String articleId, String tag) {
         if (!StringUtils.isEmpty(tag)) {
+            Date now = new Date();
             String[] tags = tag.split(",");
             // 保存标签信息以及文章与标签的关系
             for (String item : tags) {
@@ -81,13 +117,12 @@ public class ArticleService extends ServiceImpl<ArticleDao, Article> implements 
 
                 // 封装文章与标签的关系
                 ArticleTag articleTag = new ArticleTag();
-                articleTag.setArticleId(article.getArticleId());
+                articleTag.setArticleId(articleId);
                 articleTag.setTagId(tagId);
                 articleTag.setCreateTime(now);
                 // 保存
                 articleTagService.save(articleTag);
             }
         }
-        return flag;
     }
 }

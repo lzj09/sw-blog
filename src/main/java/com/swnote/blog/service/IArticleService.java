@@ -20,4 +20,13 @@ public interface IArticleService extends IService<Article> {
      * @return
      */
     public boolean create(Article article, String tag);
+
+    /**
+     * 更新文章
+     *
+     * @param article
+     * @param tag
+     * @return
+     */
+    public boolean update(Article article, String tag);
 }
