@@ -85,7 +85,7 @@
                 if (data.code == 20) {
                     SWDialog.successTips(data.msg);
 
-                    window.setTimeout("SWUtils.skip('${rc.contextPath}/u/${_SESSION_USER.code}/group')", 1000);
+                    window.setTimeout("SWUtils.skip('${rc.contextPath}/u/${(_SESSION_USER.code)!}/group')", 1000);
                 } else {
                     SWDialog.errorTips(data.msg);
                 }

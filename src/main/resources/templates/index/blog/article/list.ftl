@@ -54,7 +54,7 @@
                                                 <a href="${rc.contextPath}/p/${article.articleId}" target="_blank"><i class="fa fa-eye"></i> ${article.viewCount}</a>&nbsp;&nbsp;
                                                 <a href="${rc.contextPath}/p/${article.articleId}#comment" target="_blank"><i class="fa fa-comment-o"></i> 0</a>&nbsp;&nbsp;
                                                 <span><i class="fa fa-heart-o"></i> ${article.goodNum}</span>&nbsp;&nbsp;
-                                                <span><i class="fa fa-clock-o"></i> ${article.createTime?string("yyyy-MM-dd HH:mm")}</span>&nbsp;&nbsp;
+                                                <span><i class="fa fa-clock-o"></i> ${article.publishTime?string("yyyy-MM-dd HH:mm")}</span>&nbsp;&nbsp;
                                                 <span class="view-all"><i class="fa fa-file-text"></i> <a href="${rc.contextPath}/p/${article.articleId}" target="_blank" class="view-all">阅读全文</a></span>&nbsp;&nbsp;
                                                 <#if Session["_SESSION_USER"]?exists && user.userId == _SESSION_USER.userId>
                                                     <a href="${rc.contextPath}/user/article/edit/${article.articleId}" class="operate"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> 编辑</a>&nbsp;&nbsp;

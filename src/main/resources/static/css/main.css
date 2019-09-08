@@ -114,7 +114,7 @@ article .meta .meta-left a.collect {padding: 4px 6px;color: #428bca;border: 1px 
 article .meta .meta-left .collected {padding: 4px 6px;color: #faa91e;border: 1px solid #faa91e;border-radius: 3px;}
 article .meta .meta-right {float:right;}
 article .note-cont {margin-bottom: 10px;line-height: 24px;font-size: 16px;}
-article .note-cont img {max-width: 845px;}
+article .note-cont img {max-width: 96%;}
 article .tags {margin-bottom: 30px;color: #428bca;}
 article .tags a {padding: 4px 6px;background-color: #428bca;color: #ffffff;border: 0;border-radius: 3px;text-decoration: none;}
 article .tags a:hover {background-color: #ff9900;}

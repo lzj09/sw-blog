@@ -1,5 +1,6 @@
 package com.swnote.blog.controller.index;
 
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -29,10 +30,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 文章相关信息的前端控制器类
@@ -410,5 +408,58 @@ public class ArticleController {
             result.setMsg("删除文章失败");
         }
         return result;
+    }
+
+    /**
+     * 加载出文章详情页面
+     *
+     * @param articleId
+     * @param model
+     * @param session
+     * @return
+     */
+    @RequestMapping(value = "/p/{articleId}", method = RequestMethod.GET)
+    public String view(@PathVariable("articleId") String articleId, Model model, HttpSession session) {
+        // 根据ID获取文章信息
+        Article article = articleService.getById(articleId);
+
+        // 获取用户信息
+        User user = userService.getById(article.getUserId());
+
+        if (!StringUtils.isEmpty(article.getGroupId())) {
+            // 获取专栏信息
+            Group group = groupService.getById(article.getGroupId());
+            article.setGroupName(group.getName());
+        }
+
+        // 获取文章标签信息
+        List<Tag> tags = tagService.queryByArticleId(articleId);
+
+        // 获取该用户更多的文章信息
+        Wrapper<Article> queryWrapper = new QueryWrapper<Article>().lambda().eq(Article::getUserId, user.getUserId()).eq(Article::getStatus, Article.STATUS_SUCCESS).ne(Article::getArticleId, articleId).orderByDesc(Article::getPublishTime);
+        List<Article> moreArticles = articleService.queryForLimit(queryWrapper, 6);
+
+        // 获取推荐的文章信息
+        List<Article> likeArticles = null;
+        if (tags != null && !tags.isEmpty()) {
+            // 根据标签来获取类似的文章
+            List<String> tagStrs = new ArrayList<String>();
+            tags.stream().forEach(tag -> tagStrs.add(tag.getTag()));
+            Map<String, Object> params = new HashMap<String, Object>();
+            params.put("status", Article.STATUS_SUCCESS);
+            params.put("articleId", articleId);
+            likeArticles = articleService.queryForLimitByTags(params, tagStrs, 10);
+        } else {
+            // 获取最新的文章信息
+            Wrapper<Article> likeWrapper = new QueryWrapper<Article>().lambda().eq(Article::getStatus, Article.STATUS_SUCCESS).ne(Article::getArticleId, articleId).orderByDesc(Article::getPublishTime);
+            likeArticles = articleService.queryForLimit(queryWrapper, 10);
+        }
+
+        model.addAttribute("article", article);
+        model.addAttribute("user", user);
+        model.addAttribute("tags", tags);
+        model.addAttribute("moreArticles", moreArticles);
+        model.addAttribute("likeArticles", likeArticles);
+        return Const.BASE_INDEX_PAGE + "blog/article/view";
     }
 }

@@ -1,6 +1,9 @@
 package com.swnote.blog.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.swnote.blog.dao.ArticleDao;
 import com.swnote.blog.domain.Article;
@@ -18,7 +21,9 @@ import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 文章信息服务类
@@ -29,6 +34,9 @@ import java.util.List;
  */
 @Service
 public class ArticleService extends ServiceImpl<ArticleDao, Article> implements IArticleService {
+
+    @Autowired
+    private ArticleDao articleDao;
 
     @Autowired
     private ITagService tagService;
@@ -84,6 +92,23 @@ public class ArticleService extends ServiceImpl<ArticleDao, Article> implements 
         // 删除文章与标签的关系
         wrapArticleTag(article.getArticleId(), tag);
         return flag;
+    }
+
+    @Override
+    public List<Article> queryForLimit(Wrapper<Article> queryWrapper, int limit) {
+        IPage<Article> page = page(new Page<Article>(1, limit), queryWrapper);
+        return page.getRecords();
+    }
+
+    @Override
+    public List<Article> queryForLimitByTags(Map<String, Object> params, List<String> tags, int limit) {
+        if (params == null) {
+            params = new HashMap<String, Object>();
+        }
+        params.put("tags", tags);
+        params.put("limit", limit);
+
+        return articleDao.queryByTags(params);
     }
 
     /**
